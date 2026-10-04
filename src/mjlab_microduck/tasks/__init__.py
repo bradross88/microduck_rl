@@ -290,5 +290,15 @@ register_mjlab_task(
     runner_cls=MicroduckOnPolicyRunner,
 )
 
+from .stackforce_velocity_env_cfg import make_stackforce_velocity_env_cfg
+
+register_mjlab_task(
+    task_id="Mjlab-Velocity-Flat-StackForce",
+    env_cfg=make_stackforce_velocity_env_cfg(),
+    play_env_cfg=make_stackforce_velocity_env_cfg(play=True),
+    rl_cfg=MicroduckRlCfg,
+    runner_cls=MicroduckOnPolicyRunner,
+)
+
 # XGO-Rider: robot package exists; task registration deferred until kit
 # arrives for measurement (BL-173). See robot/xgo/xgo_constants.py.

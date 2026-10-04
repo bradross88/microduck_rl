@@ -1,0 +1,114 @@
+<?xml version="1.0" ?>
+<mujoco model="stackforce_mini">
+  <!-- Seeed Studio StackForce Mini Wheeled-Legged Robot:
+       540 g total mass, 105x210 mm footprint, 120-210 mm height range.
+       Kinematics: 5-bar closed parallel linkage per leg.
+       Actuation: 4x leg servos (front/rear hip pitch) + 2x 2208 BLDC wheel motors.
+       Sensors: 6-axis IMU (accel/gyro/quat), wheel encoders, servo positions. -->
+  <compiler angle="radian" autolimits="true"/>
+
+  <default>
+    <default class="sf">
+      <joint damping="0.03" frictionloss="0.015" armature="0.002"/>
+      <geom solimp="0.9 0.95 0.001" solref="0.002 1" friction="0.8 0.02 0.002" rgba="0.2 0.7 0.3 1"/>
+      <default class="visual"><geom contype="0" conaffinity="0" group="2"/></default>
+      <default class="collision"><geom group="3"/></default>
+      <default class="servo">
+        <position kp="0.35" dampratio="1" forcerange="-0.35 0.35"/>
+      </default>
+      <default class="wheel_motor">
+        <motor gear="1" ctrlrange="-0.25 0.25"/>
+      </default>
+    </default>
+  </default>
+
+  <worldbody>
+    <body name="trunk_base" pos="0 0 0.160" childclass="sf">
+      <freejoint name="trunk_base_freejoint"/>
+      <inertial pos="0 0 0" mass="0.260" diaginertia="0.0005 0.0007 0.0004"/>
+      <geom type="box" size="0.0525 0.080 0.025" class="visual" rgba="0.2 0.25 0.25 1"/>
+      <geom type="box" size="0.0525 0.080 0.025" class="collision" name="trunk_collision" mass="0"/>
+      <site name="imu" pos="0 0 0" size="0.005"/>
+
+      <!-- LEFT LEG 5-BAR LINKAGE -->
+      <body name="left_front_thigh" pos="0.030 0.095 0">
+        <joint name="left_front_hip" type="hinge" axis="0 1 0" range="-1.2 1.2"/>
+        <geom type="capsule" size="0.008" fromto="0 0 0 0.030 0 -0.040" mass="0.018" class="visual"/>
+        <body name="left_front_forearm" pos="0.030 0 -0.040">
+          <joint name="left_front_knee" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+          <geom type="capsule" size="0.006" fromto="0 0 0 -0.030 0 -0.055" mass="0.012" class="visual"/>
+          <site name="left_front_link_tip" pos="-0.030 0 -0.055" size="0.003"/>
+        </body>
+      </body>
+
+      <body name="left_rear_thigh" pos="-0.030 0.095 0">
+        <joint name="left_rear_hip" type="hinge" axis="0 1 0" range="-1.2 1.2"/>
+        <geom type="capsule" size="0.008" fromto="0 0 0 -0.030 0 -0.040" mass="0.018" class="visual"/>
+        <body name="left_rear_forearm" pos="-0.030 0 -0.040">
+          <joint name="left_rear_knee" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+          <geom type="capsule" size="0.006" fromto="0 0 0 0.030 0 -0.055" mass="0.012" class="visual"/>
+          <site name="left_rear_link_tip" pos="0.030 0 -0.055" size="0.003"/>
+          <body name="left_wheel" pos="0.030 0.012 -0.055">
+            <joint name="left_wheel_joint" type="hinge" axis="0 1 0" damping="0.002" frictionloss="0.005" armature="0.001"/>
+            <geom type="cylinder" size="0.030 0.008" quat="0.7071068 0.7071068 0 0" mass="0.080" friction="1.2 0.02 0.002" class="collision" name="left_wheel_collision"/>
+            <geom type="cylinder" size="0.030 0.008" quat="0.7071068 0.7071068 0 0" class="visual" mass="0" rgba="0.1 0.1 0.1 1"/>
+            <site name="left_wheel_center" pos="0 0 0" size="0.004"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- RIGHT LEG 5-BAR LINKAGE -->
+      <body name="right_front_thigh" pos="0.030 -0.095 0">
+        <joint name="right_front_hip" type="hinge" axis="0 1 0" range="-1.2 1.2"/>
+        <geom type="capsule" size="0.008" fromto="0 0 0 0.030 0 -0.040" mass="0.018" class="visual"/>
+        <body name="right_front_forearm" pos="0.030 0 -0.040">
+          <joint name="right_front_knee" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+          <geom type="capsule" size="0.006" fromto="0 0 0 -0.030 0 -0.055" mass="0.012" class="visual"/>
+          <site name="right_front_link_tip" pos="-0.030 0 -0.055" size="0.003"/>
+        </body>
+      </body>
+
+      <body name="right_rear_thigh" pos="-0.030 -0.095 0">
+        <joint name="right_rear_hip" type="hinge" axis="0 1 0" range="-1.2 1.2"/>
+        <geom type="capsule" size="0.008" fromto="0 0 0 -0.030 0 -0.040" mass="0.018" class="visual"/>
+        <body name="right_rear_forearm" pos="-0.030 0 -0.040">
+          <joint name="right_rear_knee" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+          <geom type="capsule" size="0.006" fromto="0 0 0 0.030 0 -0.055" mass="0.012" class="visual"/>
+          <site name="right_rear_link_tip" pos="0.030 0 -0.055" size="0.003"/>
+          <body name="right_wheel" pos="0.030 -0.012 -0.055">
+            <joint name="right_wheel_joint" type="hinge" axis="0 1 0" damping="0.002" frictionloss="0.005" armature="0.001"/>
+            <geom type="cylinder" size="0.030 0.008" quat="0.7071068 0.7071068 0 0" mass="0.080" friction="1.2 0.02 0.002" class="collision" name="right_wheel_collision"/>
+            <geom type="cylinder" size="0.030 0.008" quat="0.7071068 0.7071068 0 0" class="visual" mass="0" rgba="0.1 0.1 0.1 1"/>
+            <site name="right_wheel_center" pos="0 0 0" size="0.004"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <equality>
+    <connect name="left_5bar_closure"  body1="left_front_forearm"  body2="left_rear_forearm"  anchor="-0.030 0 -0.055" solref="0.002 1" solimp="0.99 0.999 0.0005"/>
+    <connect name="right_5bar_closure" body1="right_front_forearm" body2="right_rear_forearm" anchor="-0.030 0 -0.055" solref="0.002 1" solimp="0.99 0.999 0.0005"/>
+  </equality>
+
+  <actuator>
+    <position name="left_front_hip_ctrl"  joint="left_front_hip"  class="servo" ctrlrange="-1.2 1.2"/>
+    <position name="left_rear_hip_ctrl"   joint="left_rear_hip"   class="servo" ctrlrange="-1.2 1.2"/>
+    <position name="right_front_hip_ctrl" joint="right_front_hip" class="servo" ctrlrange="-1.2 1.2"/>
+    <position name="right_rear_hip_ctrl"  joint="right_rear_hip"  class="servo" ctrlrange="-1.2 1.2"/>
+    <motor name="left_wheel_ctrl"  joint="left_wheel_joint"  class="wheel_motor"/>
+    <motor name="right_wheel_ctrl" joint="right_wheel_joint" class="wheel_motor"/>
+  </actuator>
+
+  <sensor>
+    <accelerometer site="imu" name="accel"/>
+    <gyro site="imu" name="gyro"/>
+    <framequat objtype="site" objname="imu" name="orientation"/>
+    <jointvel joint="left_wheel_joint" name="left_wheel_vel"/>
+    <jointvel joint="right_wheel_joint" name="right_wheel_vel"/>
+    <jointpos joint="left_front_hip" name="left_front_hip_pos"/>
+    <jointpos joint="left_rear_hip" name="left_rear_hip_pos"/>
+    <jointpos joint="right_front_hip" name="right_front_hip_pos"/>
+    <jointpos joint="right_rear_hip" name="right_rear_hip_pos"/>
+  </sensor>
+</mujoco>
