@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<mujoco model="xgo_rider">
+  <!-- LuWu XGO-Rider (ELECFREAKS EF08417): spec-anchored TEMPLATE.
+       600 g, 135x118x116-158 mm, 4x 6V 4.5kg.cm bus servos, 2x FOC hub
+       motors rated 0.1 N.m. Segment geometry ESTIMATED from published size
+       range - re-measure when kit arrives (BL-173) before training. -->
+  <compiler angle="radian" autolimits="true"/>
+
+  <default>
+    <default class="xgo">
+      <joint damping="0.04" frictionloss="0.02" armature="0.004"/>
+      <geom solimp="0.9 0.95 0.001" solref="0.002 1" friction="0.7 0.02 0.002" rgba="0.9 0.9 0.95 1"/>
+      <default class="visual"><geom contype="0" conaffinity="0" group="2"/></default>
+      <default class="servo">
+        <position kp="0.4" dampratio="1" forcerange="-0.441 0.441"/>
+      </default>
+    </default>
+  </default>
+
+  <worldbody>
+    <body name="trunk_base" pos="0 0 0.115" childclass="xgo">
+      <freejoint name="trunk_base_freejoint"/>
+      <inertial pos="0 0 -0.010" mass="0.300" diaginertia="0.00055 0.00040 0.00030"/>
+      <geom type="box" size="0.067 0.059 0.030" class="visual"/>
+      <geom type="box" size="0.030 0.045 0.006" pos="0 0 0.036" mass="0.030" class="visual" rgba="0.2 0.2 0.25 1"/>
+      <site name="imu" pos="0 0 0" size="0.005"/>
+
+      <body name="left_upper_leg" pos="0 0.050 -0.030">
+        <joint name="left_hip_pitch" type="hinge" axis="0 1 0" range="-0.9 0.9"/>
+        <geom type="box" size="0.014 0.010 0.016" pos="0 0 -0.015" mass="0.050" class="visual" rgba="0.3 0.3 0.35 1"/>
+        <body name="left_lower_leg" pos="0 0 -0.030">
+          <joint name="left_knee_pitch" type="hinge" axis="0 1 0" range="-1.4 1.4"/>
+          <geom type="box" size="0.012 0.008 0.013" pos="0 0 -0.012" mass="0.030" class="visual" rgba="0.35 0.35 0.4 1"/>
+          <body name="left_wheel" pos="0 0 -0.025">
+            <joint name="left_wheel" type="hinge" axis="0 1 0" damping="0.005" frictionloss="0.01" armature="0.001"/>
+            <geom type="cylinder" size="0.030 0.011" quat="0.7071068 0.7071068 0 0" mass="0.045" friction="1.2 0.05 0.005" rgba="0.15 0.15 0.15 1"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="right_upper_leg" pos="0 -0.050 -0.030">
+        <joint name="right_hip_pitch" type="hinge" axis="0 1 0" range="-0.9 0.9"/>
+        <geom type="box" size="0.014 0.010 0.016" pos="0 0 -0.015" mass="0.050" class="visual" rgba="0.3 0.3 0.35 1"/>
+        <body name="right_lower_leg" pos="0 0 -0.030">
+          <joint name="right_knee_pitch" type="hinge" axis="0 1 0" range="-1.4 1.4"/>
+          <geom type="box" size="0.012 0.008 0.013" pos="0 0 -0.012" mass="0.030" class="visual" rgba="0.35 0.35 0.4 1"/>
+          <body name="right_wheel" pos="0 0 -0.025">
+            <joint name="right_wheel" type="hinge" axis="0 1 0" damping="0.005" frictionloss="0.01" armature="0.001"/>
+            <geom type="cylinder" size="0.030 0.011" quat="0.7071068 0.7071068 0 0" mass="0.045" friction="1.2 0.05 0.005" rgba="0.15 0.15 0.15 1"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="left_hip_pitch_ctrl"   joint="left_hip_pitch"   class="servo" ctrlrange="-0.9 0.9"/>
+    <position name="left_knee_pitch_ctrl"  joint="left_knee_pitch"  class="servo" ctrlrange="-1.4 1.4"/>
+    <position name="right_hip_pitch_ctrl"  joint="right_hip_pitch"  class="servo" ctrlrange="-0.9 0.9"/>
+    <position name="right_knee_pitch_ctrl" joint="right_knee_pitch" class="servo" ctrlrange="-1.4 1.4"/>
+    <motor name="left_wheel_motor"   joint="left_wheel"  gear="1" ctrlrange="-0.1 0.1"/>
+    <motor name="right_wheel_motor"  joint="right_wheel" gear="1" ctrlrange="-0.1 0.1"/>
+  </actuator>
+
+  <sensor>
+    <accelerometer site="imu" name="accel"/>
+    <gyro site="imu" name="gyro"/>
+    <framequat objtype="site" objname="imu" name="orientation"/>
+    <jointvel joint="left_wheel" name="left_wheel_vel"/>
+    <jointvel joint="right_wheel" name="right_wheel_vel"/>
+  </sensor>
+</mujoco>

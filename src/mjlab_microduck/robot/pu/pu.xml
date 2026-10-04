@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<mujoco model="pu_robot">
+  <!-- ELECFREAKS micro:bit PU Robot (EF08449), StickS3 backpack (Fleet Device 8).
+       Spec-anchored primitive model: 300 g / 120x110x160 mm / 6 DOF (ELECFREAKS
+       specs) + NVS kinematic trims + 1.5 kg.cm, 60deg/0.12 s servos.
+       TODO before sim2real: re-measure segment masses/pivots and bench-identify
+       servo torque-speed (no published BAM model for these micro servos). -->
+  <compiler angle="radian" autolimits="true"/>
+
+  <default>
+    <default class="pu">
+      <joint damping="0.02" frictionloss="0.012" armature="0.0015"/>
+      <geom solimp="0.9 0.95 0.001" solref="0.002 1" friction="0.6 0.02 0.002" rgba="0.8 0.7 0.2 1"/>
+      <default class="visual"><geom contype="0" conaffinity="0" group="2"/></default>
+      <default class="collision"><geom group="3"/></default>
+      <default class="servo">
+        <position kp="0.12" dampratio="1" forcerange="-0.147 0.147"/>
+      </default>
+    </default>
+  </default>
+
+  <worldbody>
+    <body name="trunk_base" pos="0 0 0.095" childclass="pu">
+      <freejoint name="trunk_base_freejoint"/>
+      <inertial pos="-0.005 0 0.004" mass="0.150" diaginertia="0.00022 0.00025 0.00011"/>
+      <geom type="box" size="0.050 0.055 0.030" class="visual"/>
+      <geom type="box" size="0.0125 0.035 0.040" pos="-0.0625 0 0" mass="0.020" class="visual" rgba="0.2 0.2 0.25 1"/>
+      <geom type="box" size="0.050 0.055 0.030" class="collision" name="trunk_collision" mass="0"/>
+      <site name="imu" pos="0 0 0" size="0.005"/>
+
+      <body name="head_yaw" pos="0 0 0.030">
+        <joint name="head_yaw" type="hinge" axis="0 0 1" range="-1.5 1.5"/>
+        <geom type="cylinder" size="0.012 0.006" pos="0 0 0.005" mass="0.008" class="visual" rgba="0.3 0.3 0.3 1"/>
+        <body name="head_pitch" pos="0 0 0.014">
+          <joint name="head_pitch" type="hinge" axis="0 1 0" range="0 1.4"/>
+          <geom type="box" size="0.020 0.030 0.015" pos="0 0 0.011" mass="0.037" class="visual"/>
+        </body>
+      </body>
+
+      <body name="left_leg" pos="0 0.028 -0.037">
+        <joint name="left_leg_stride" type="hinge" axis="0 1 0" range="-0.79 0.79"/>
+        <geom type="box" size="0.016 0.018 0.020" pos="0 0 -0.019" mass="0.036" class="visual" rgba="0.7 0.6 0.2 1"/>
+        <geom type="box" size="0.016 0.018 0.020" pos="0 0 -0.019" class="collision" name="left_leg_collision" mass="0"/>
+        <body name="left_foot" pos="0 0 -0.038">
+          <joint name="left_foot_tilt" type="hinge" axis="0 1 0" range="-0.61 0.61"/>
+          <geom type="box" size="0.032 0.018 0.010" pos="0.006 0 -0.010" mass="0.024" class="visual" rgba="0.25 0.25 0.3 1"/>
+          <geom type="box" size="0.032 0.018 0.010" pos="0.006 0 -0.010" class="collision" name="left_foot_collision" mass="0" condim="3" priority="1" friction="1.0 0.05 0.002"/>
+          <site name="left_foot" pos="0.006 0 -0.014" size="0.004"/>
+        </body>
+      </body>
+
+      <body name="right_leg" pos="0 -0.028 -0.037">
+        <joint name="right_leg_stride" type="hinge" axis="0 1 0" range="-0.79 0.79"/>
+        <geom type="box" size="0.016 0.018 0.020" pos="0 0 -0.019" mass="0.036" class="visual" rgba="0.7 0.6 0.2 1"/>
+        <geom type="box" size="0.016 0.018 0.020" pos="0 0 -0.019" class="collision" name="right_leg_collision" mass="0"/>
+        <body name="right_foot" pos="0 0 -0.038">
+          <joint name="right_foot_tilt" type="hinge" axis="0 1 0" range="-0.61 0.61"/>
+          <geom type="box" size="0.032 0.018 0.010" pos="0.006 0 -0.010" mass="0.024" class="visual" rgba="0.25 0.25 0.3 1"/>
+          <geom type="box" size="0.032 0.018 0.010" pos="0.006 0 -0.010" class="collision" name="right_foot_collision" mass="0" condim="3" priority="1" friction="1.0 0.05 0.002"/>
+          <site name="right_foot" pos="0.006 0 -0.014" size="0.004"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="left_leg_stride_ctrl"  joint="left_leg_stride"  class="servo" ctrlrange="-0.79 0.79"/>
+    <position name="left_foot_tilt_ctrl"   joint="left_foot_tilt"   class="servo" ctrlrange="-0.61 0.61"/>
+    <position name="right_leg_stride_ctrl" joint="right_leg_stride" class="servo" ctrlrange="-0.79 0.79"/>
+    <position name="right_foot_tilt_ctrl"  joint="right_foot_tilt"  class="servo" ctrlrange="-0.61 0.61"/>
+    <position name="head_yaw_ctrl"         joint="head_yaw"         class="servo" ctrlrange="-1.5 1.5"/>
+    <position name="head_pitch_ctrl"       joint="head_pitch"       class="servo" ctrlrange="0 1.4"/>
+  </actuator>
+
+  <sensor>
+    <accelerometer site="imu" name="accel"/>
+    <gyro site="imu" name="gyro"/>
+    <framequat objtype="site" objname="imu" name="orientation"/>
+    <subtreeangmom body="trunk_base" name="root_angmom"/>
+  </sensor>
+</mujoco>

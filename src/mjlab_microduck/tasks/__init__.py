@@ -278,3 +278,17 @@ for _task_id, _make_cfg, _kw, _rl_cfg, _robot_cfg in _BACKLASH_TASKS:
         rl_cfg=_rl_cfg,
         runner_cls=MicroduckOnPolicyRunner,
     )
+
+# --- BB Fleet tasks (fork-local; see robot/pu/, robot/xgo/) ---
+from .pu_velocity_env_cfg import make_pu_velocity_env_cfg
+
+register_mjlab_task(
+    task_id="Mjlab-Velocity-Flat-PURobot",
+    env_cfg=make_pu_velocity_env_cfg(),
+    play_env_cfg=make_pu_velocity_env_cfg(play=True),
+    rl_cfg=MicroduckRlCfg,
+    runner_cls=MicroduckOnPolicyRunner,
+)
+
+# XGO-Rider: robot package exists; task registration deferred until kit
+# arrives for measurement (BL-173). See robot/xgo/xgo_constants.py.
